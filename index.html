@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mdbassit/Coloris@latest/dist/coloris.min.css" />
+    <script src="https://cdn.jsdelivr.net/gh/mdbassit/Coloris@latest/dist/coloris.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
+        body {
+            background-color: rgb(18, 18, 18);
+            color: white;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        p {
+            font-size: 24px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Stardew Boots color.png editor</h1>
+    <p>
+        A quick little tool to test colors for Stardew Valley Json Assets boots.<br>
+        Once you've found a color scheme you're happy with download the result and save it as color.png in your mod folder.
+    </p>
+    <a style="font-size: large; color: white;" href="" download="color.png" id="download">Download result (save as color.png)</a>
+    <br>
+    <br>
+    <input onchange="redraw()" type="text" data-coloris id="colorpicker0" value="#fc0303">
+    <input onchange="redraw()" type="text" data-coloris id="colorpicker1" value="#0037ff">
+    <input onchange="redraw()" type="text" data-coloris id="colorpicker2" value="#04ff00">
+    <input onchange="redraw()" type="text" data-coloris id="colorpicker3" value="#fff700">
+    
+    <br>
+    <br>
+    <div style="padding-top: 100px;">
+        <table>
+            <tr>
+                <td>
+                    <h1>Front</h1>
+                </td>
+                <td>
+                    <h1>Side</h1>
+                </td>
+                <td>
+                    <h1>Back</h1>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <canvas width="110" height="70" id="front"></canvas>
+                </td>
+                <td>
+                    <canvas width="110" height="70" id="side"></canvas>
+                </td>
+                <td>
+                    <canvas width="110" height="70" id="back"></canvas>
+                </td>
+            </tr>
+        </table>
+
+    </div>
+    <canvas width="4" height="1" id="result" hidden="hidden"></canvas>
+    <script>
+
+        const front_canvas = document.getElementById("front");
+        const side_canvas = document.getElementById("side");
+        const back_canvas = document.getElementById("back");
+        const front_ctx = front_canvas.getContext("2d");
+        const side_ctx = side_canvas.getContext("2d");
+        const back_ctx = back_canvas.getContext("2d");
+        let scale_factor = 10;
+        let front = [
+            [-1, 0, 1, 1, 0, 0, 1, 1, 0, -1],
+            [-1, 0, 2, 1, 0, 0, 1, 2, 0, -1],
+            [0, 2, 2, 2, 0, 0, 2, 2, 2, 0],
+            [0, 3, 3, 1, 0, 0, 1, 3, 3, 0],
+            [-1, 0, 0, 0, -1, -1, 0, 0, 0, -1],
+        ]
+        let side = [
+            [-1, -1, -1, -1, 0, 2, 0, -1, -1, -1, -1],
+            [0, 2, 2, 1, 0, 3, 1, 0, -1],
+            [0, 2, 3, 3, 1, 2, 3, 2, 0],
+            [0, 1, 2, 3, 3, 0, 0, 0, 0],
+            [-1, 0, 0, 0, 0, 0, -1, -1, -1],
+        ]
+        let back = [
+            [0, 1, 1, 1, -1, -1, 1, 1, 1, 0],
+            [0, 1, 2, 2, 0, 0, 2, 2, 1, 0],
+            [-1, 0, 1, 1, 0, 0, 1, 1, 0, -1],
+            [-1, -1, 0, 0, -1, -1, 0, 0, -1, -1],
+        ]
+        function draw(layout, ctx) {
+            var x = 0
+            var y = 0
+            let fillstyles = {
+                "0": $("#colorpicker0").val(),
+                "1": $("#colorpicker1").val(),
+                "2": $("#colorpicker2").val(),
+                "3": $("#colorpicker3").val(),
+            }
+            layout.forEach(element => {
+                y++;
+                element.forEach(f => {
+                    if (f >= 0) {
+                        ctx.fillStyle = fillstyles[f.toString()]
+                        ctx.fillRect(x * scale_factor, y * scale_factor, scale_factor, scale_factor);
+                    }
+                    x++;
+                });
+                x = 0;
+            });
+        }
+        function redraw() {
+            front_ctx.fillStyle = "black";
+            side_ctx.fillStyle = "black";
+            back_ctx.fillStyle = "black";
+            front_ctx.fillRect(0, 0, front_canvas.width, front_canvas.height);
+            side_ctx.fillRect(0, 0, side_canvas.width, side_canvas.height);
+            back_ctx.fillRect(0, 0, back_canvas.width, back_canvas.height);
+
+            draw(front, front_ctx);
+            draw(side, side_ctx);
+            draw(back, back_ctx);
+            const result_context = document.getElementById("result").getContext("2d");
+            result_context.fillStyle = $("#colorpicker0").val();
+            result_context.fillRect(0,0,1,1);
+            result_context.fillStyle = $("#colorpicker1").val();
+            result_context.fillRect(1,0,1,1);
+            result_context.fillStyle = $("#colorpicker2").val();
+            result_context.fillRect(2,0,1,1);
+            result_context.fillStyle = $("#colorpicker3").val();
+            result_context.fillRect(3,0,1,1);
+            document.getElementById("download").href = document.getElementById("result").toDataURL();
+        }
+        redraw();
+    </script>
+</body>
+
+</html>
