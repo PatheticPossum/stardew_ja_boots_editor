@@ -1,0 +1,1 @@
+# stardew_ja_boots_editor
